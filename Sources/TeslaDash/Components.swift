@@ -154,10 +154,16 @@ extension View {
                 TimelineView(.animation(minimumInterval: 1 / 30)) { ctx in
                     let phase = ctx.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 0.6) / 0.6
                     let on = 0.5 - 0.5 * cos(phase * 2 * .pi)   // smooth 0→1→0
-                    // Fill only, no outline: the area itself pulses.
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(Color(hex: 0xE3001B).opacity(0.06 + 0.30 * on))
-                        .padding(-inset)
+                    // Soft glow: full strength in the middle, fading to nothing at the edges.
+                    let red = Color(hex: 0xE3001B)
+                    let peak = 0.10 + 0.35 * on
+                    EllipticalGradient(stops: [.init(color: red.opacity(peak), location: 0),
+                                               .init(color: red.opacity(peak * 0.75), location: 0.45),
+                                               .init(color: red.opacity(peak * 0.25), location: 0.75),
+                                               .init(color: red.opacity(0), location: 1)],
+                                       center: .center)
+                        .padding(-inset * 3)
+                        .blur(radius: inset * 1.5)
                 }
             }
         }

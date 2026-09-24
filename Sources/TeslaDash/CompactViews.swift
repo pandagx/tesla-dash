@@ -361,7 +361,7 @@ struct StripBar: View {
                 HStack(alignment: .center, spacing: speed * 0.2) {
                     SpeedText(speed: d.speed, size: speed)
                         .frame(minWidth: speed * 2.2, alignment: .trailing)
-                        .overspeedFlash(d.isWellOverLimit, cornerRadius: 10, inset: 2 * f)
+                        .overspeedFlash(d.isWellOverLimit, cornerRadius: 10, inset: 6 * f)
                     VStack(spacing: 3 * f) {
                         Text(d.gear.rawValue)
                             .font(.num(15 * f, .semibold))
