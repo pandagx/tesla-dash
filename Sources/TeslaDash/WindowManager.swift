@@ -336,6 +336,7 @@ struct ModeMenuItems: View {
         Picker("模拟场景", selection: $store.scenario) {
             ForEach(Scenario.allCases) { Text($0.rawValue).tag($0) }
         }
+        Toggle("模拟限速（演示用，非真实道路限速）", isOn: $store.mockSpeedLimit)
     }
 }
 

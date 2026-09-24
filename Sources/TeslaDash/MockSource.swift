@@ -25,8 +25,14 @@ final class VehicleStore {
     private var timer: Timer?
     private var t: Double = 0
     private var targetSpeed: Double = 60
-    /// No real speed-limit source yet, so the sign stays hidden unless `-mockSpeedLimit YES` is passed.
-    private let mockSpeedLimit = UserDefaults.standard.bool(forKey: "mockSpeedLimit")
+    /// No real speed-limit source yet, so simulated limits are off by default; toggled from the
+    /// menu (模拟限速) or with `-mockSpeedLimit YES`. Persisted.
+    var mockSpeedLimit = UserDefaults.standard.bool(forKey: "mockSpeedLimit") {
+        didSet {
+            UserDefaults.standard.set(mockSpeedLimit, forKey: "mockSpeedLimit")
+            enter(scenario)
+        }
+    }
 
     init() {
         seed()

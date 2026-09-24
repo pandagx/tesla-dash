@@ -19,7 +19,7 @@
 ### Notes
 - The posted road speed limit is **not available over BLE** (the protocol only exposes the
   owner's own "Speed Limit Mode" cap). The car has it on the CAN bus only. Until a real source
-  exists, the sign and alert are hidden; pass `-mockSpeedLimit YES` to demo with simulated limits.
+  exists, the sign and alert are hidden by default; turn on 模拟限速 in the menu (or pass `-mockSpeedLimit YES`) to demo with simulated limits.
 
 ### Fixed
 - Vertical mode at its narrowest width truncated three-digit speeds ("12…")
