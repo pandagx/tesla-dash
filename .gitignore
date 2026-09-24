@@ -1,0 +1,15 @@
+# Build output
+.build/
+build/
+bin/
+TeslaBLE.app/
+
+# Fetched by scripts/build-tesla-control.sh
+vendor/vehicle-command/
+
+# Local runtime data
+logs/
+probe-*/
+keys/
+
+.DS_Store
