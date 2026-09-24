@@ -71,38 +71,44 @@ private struct CompactHeader: View {
     let store: VehicleStore
     var showName = true
 
-    private enum StatusStyle { case nameAndStatus, status, adaptive }
+    private enum StatusStyle { case nameAndStatus, status, dot }
 
     var body: some View {
-        // Widest to narrowest; ViewThatFits takes the first that fits. Every candidate keeps the
-        // full date: in the narrow vertical bar the date and weekday get their own line.
-        ViewThatFits(in: .horizontal) {
-            if showName { row(ClockText(now: store.now, size: 13, parts: .full), .nameAndStatus) }
-            row(ClockText(now: store.now, size: 13, parts: .full), .status)
-            VStack(alignment: .trailing, spacing: 3) {
-                row(ClockText(now: store.now, size: 13, parts: .timeOnly), .adaptive)
-                ClockText(now: store.now, size: 11, parts: .dateOnly)
+        // Layout chosen from the available header width (ViewThatFits misjudges the AppKit-backed
+        // menu button). The date is always kept: in the narrow vertical bar it becomes a small
+        // date-over-weekday block in front of the time.
+        GeometryReader { g in
+            let w = g.size.width
+            Group {
+                if w >= 340, showName {
+                    row(ClockText(now: store.now, size: 13, parts: .full), .nameAndStatus)
+                } else if w >= 240 {
+                    row(ClockText(now: store.now, size: 13, parts: .full), .status)
+                } else {
+                    row(ClockText(now: store.now, size: 13, parts: .stacked), .dot)
+                }
             }
+            .frame(width: w, height: g.size.height)
         }
+        .frame(height: 22)
         .background(WindowDragArea()) // the whole header also moves the window
     }
 
     private func row(_ clock: ClockText, _ style: StatusStyle) -> some View {
         let s = store.snapshot
-        return HStack(spacing: 10) {
+        let gap: CGFloat = style == .dot ? 4 : 10 // tighter in the narrow vertical bar
+        return HStack(spacing: gap) {
             switch style {
             case .nameAndStatus:
                 Text(s.name).font(.label(12, .semibold)).foregroundStyle(Theme.secondary).fixedSize()
                 StatusDot(status: s.status).fixedSize()
             case .status:
                 StatusDot(status: s.status).fixedSize()
-            case .adaptive:
-                ViewThatFits(in: .horizontal) {
-                    StatusDot(status: s.status)
-                    Circle().fill(s.status.color).frame(width: 6, height: 6)
-                }
+            case .dot:
+                // A fixed-size dot (not a nested ViewThatFits) so the row's ideal width is honest.
+                Circle().fill(s.status.color).frame(width: 6, height: 6).help(s.status.label)
             }
-            Spacer(minLength: 6)
+            Spacer(minLength: style == .dot ? 0 : 6)
             clock.fixedSize()
             BluetoothIcon(connected: s.bleConnected, size: 13)
             WindowControls()

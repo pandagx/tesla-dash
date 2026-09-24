@@ -114,7 +114,7 @@ private struct BluetoothRune: Shape {
 /// "9/24 星期四 16:30": date and weekday dimmer, time as before. When too narrow, the date and
 /// weekday move to a small line above the time; only as a last resort is the time shown alone.
 struct ClockText: View {
-    enum Parts { case auto, full, timeOnly, dateOnly }
+    enum Parts { case auto, full, stacked, timeOnly, dateOnly }
 
     let now: Date
     var size: CGFloat = 16
@@ -144,6 +144,15 @@ struct ClockText: View {
             switch parts {
             case .full:
                 HStack(alignment: .firstTextBaseline, spacing: size * 0.4) { day; weekday; time }
+            case .stacked:
+                // Narrow: date over weekday, as a small two-line block in front of the time.
+                HStack(alignment: .center, spacing: size * 0.35) {
+                    VStack(alignment: .trailing, spacing: -1) {
+                        day.font(.num(size * 0.66))
+                        weekday.font(.label(size * 0.62))
+                    }
+                    time
+                }
             case .timeOnly:
                 time
             case .dateOnly:
