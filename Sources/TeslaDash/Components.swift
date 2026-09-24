@@ -111,11 +111,14 @@ private struct BluetoothRune: Shape {
     }
 }
 
-/// "9/24 星期四 16:30": date and weekday dimmer, time as before. Drops the weekday, then the
-/// date, when the space is too narrow.
+/// "9/24 星期四 16:30": date and weekday dimmer, time as before. When too narrow, the date and
+/// weekday move to a small line above the time; only as a last resort is the time shown alone.
 struct ClockText: View {
+    enum Parts { case auto, full, timeOnly, dateOnly }
+
     let now: Date
     var size: CGFloat = 16
+    var parts: Parts = .auto
 
     private static let dayFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -137,10 +140,28 @@ struct ClockText: View {
         let day = Text(Self.dayFormatter.string(from: now)).foregroundStyle(Theme.tertiary)
         let weekday = Text(Self.weekdayFormatter.string(from: now))
             .font(.label(size * 0.85)).foregroundStyle(Theme.tertiary)
-        ViewThatFits(in: .horizontal) {
-            HStack(alignment: .firstTextBaseline, spacing: size * 0.4) { day; weekday; time }
-            HStack(alignment: .firstTextBaseline, spacing: size * 0.4) { day; time }
-            time
+        Group {
+            switch parts {
+            case .full:
+                HStack(alignment: .firstTextBaseline, spacing: size * 0.4) { day; weekday; time }
+            case .timeOnly:
+                time
+            case .dateOnly:
+                HStack(alignment: .firstTextBaseline, spacing: size * 0.4) { day; weekday }
+            case .auto:
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .firstTextBaseline, spacing: size * 0.4) { day; weekday; time }
+                    // Narrow: date + weekday as a small line stacked above the time.
+                    VStack(alignment: .trailing, spacing: 0) {
+                        HStack(alignment: .firstTextBaseline, spacing: size * 0.3) {
+                            day.font(.num(size * 0.75))
+                            weekday.font(.label(size * 0.7))
+                        }
+                        time
+                    }
+                    time
+                }
+            }
         }
         .font(.num(size))
         .lineLimit(1)

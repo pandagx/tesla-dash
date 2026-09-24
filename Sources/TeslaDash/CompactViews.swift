@@ -71,27 +71,42 @@ private struct CompactHeader: View {
     let store: VehicleStore
     var showName = true
 
+    private enum StatusStyle { case nameAndStatus, status, adaptive }
+
     var body: some View {
-        let s = store.snapshot
-        HStack(spacing: 10) {
-            // Drop the car name first, then the status text, when the window gets narrow.
-            ViewThatFits(in: .horizontal) {
-                HStack(spacing: 10) {
-                    if showName {
-                        Text(s.name).font(.label(12, .semibold)).foregroundStyle(Theme.secondary)
-                    }
-                    StatusDot(status: s.status)
-                }
-                StatusDot(status: s.status)
-                Circle().fill(s.status.color).frame(width: 6, height: 6)
+        // Widest to narrowest; ViewThatFits takes the first that fits. Every candidate keeps the
+        // full date: in the narrow vertical bar the date and weekday get their own line.
+        ViewThatFits(in: .horizontal) {
+            if showName { row(ClockText(now: store.now, size: 13, parts: .full), .nameAndStatus) }
+            row(ClockText(now: store.now, size: 13, parts: .full), .status)
+            VStack(alignment: .trailing, spacing: 3) {
+                row(ClockText(now: store.now, size: 13, parts: .timeOnly), .adaptive)
+                ClockText(now: store.now, size: 11, parts: .dateOnly)
             }
-            .lineLimit(1)
+        }
+        .background(WindowDragArea()) // the whole header also moves the window
+    }
+
+    private func row(_ clock: ClockText, _ style: StatusStyle) -> some View {
+        let s = store.snapshot
+        return HStack(spacing: 10) {
+            switch style {
+            case .nameAndStatus:
+                Text(s.name).font(.label(12, .semibold)).foregroundStyle(Theme.secondary).fixedSize()
+                StatusDot(status: s.status).fixedSize()
+            case .status:
+                StatusDot(status: s.status).fixedSize()
+            case .adaptive:
+                ViewThatFits(in: .horizontal) {
+                    StatusDot(status: s.status)
+                    Circle().fill(s.status.color).frame(width: 6, height: 6)
+                }
+            }
             Spacer(minLength: 6)
-            ClockText(now: store.now, size: 13).layoutPriority(1)
+            clock.fixedSize()
             BluetoothIcon(connected: s.bleConnected, size: 13)
             WindowControls()
         }
-        .background(WindowDragArea()) // the whole header row also moves the window
     }
 }
 

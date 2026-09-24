@@ -11,7 +11,7 @@
 - Digit effect for the speed readout, switchable in the right-click / menu-bar menu (数字效果):
   翻页 flip-clock cards (SF Pro Condensed, 0.18 s per flip, only changed digits flip),
   滚动 rolling numbers (default), 直接跳变 plain jump; the choice is remembered
-- Clock shows date and weekday: "9/24 星期四 16:30" (weekday, then date, drop when narrow)
+- Clock shows date and weekday: "9/24 星期四 16:30"; in the narrow vertical bar the date and weekday move to their own line under the time
 - Navigation shows "未导航" (not navigating) when the car has no active route; the vertical
   mode now always keeps the navigation tile. Only the car's own navigation is synced
   (phone navigation isn't visible to the car)
