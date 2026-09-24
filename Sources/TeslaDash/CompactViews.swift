@@ -176,7 +176,7 @@ struct SquareWidget: View {
                             .lineLimit(1)
                         Text("km/h").font(.label(12)).foregroundStyle(Theme.tertiary).padding(.leading, 4)
                     }
-                    .overspeedFlash(d.isWellOverLimit)
+                    .overspeedFlash(d.overspeed)
                     Spacer(minLength: 0)
                     if let limit = d.speedLimit { SpeedLimitSign(limit: limit, size: 42) }
                     GearColumn(gear: d.gear, size: 12)
@@ -231,7 +231,7 @@ struct VerticalBar: View {
                                 .lineLimit(1)
                             Text("km/h").font(.label(12)).foregroundStyle(Theme.tertiary).padding(.leading, 4)
                         }
-                        .overspeedFlash(d.isWellOverLimit, cornerRadius: 12)
+                        .overspeedFlash(d.overspeed, cornerRadius: 12)
                         Spacer(minLength: 0)
                         VStack(spacing: 8) {
                             if let limit = d.speedLimit { SpeedLimitSign(limit: limit, size: 32) }
@@ -361,7 +361,7 @@ struct StripBar: View {
                 HStack(alignment: .center, spacing: speed * 0.2) {
                     SpeedText(speed: d.speed, size: speed)
                         .frame(minWidth: speed * 2.2, alignment: .trailing)
-                        .overspeedFlash(d.isWellOverLimit, cornerRadius: 10, inset: 6 * f)
+                        .overspeedFlash(d.overspeed, cornerRadius: 10, inset: 6 * f)
                     VStack(spacing: 3 * f) {
                         Text(d.gear.rawValue)
                             .font(.num(15 * f, .semibold))

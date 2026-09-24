@@ -35,11 +35,18 @@ struct DriveState {
     var speedLimit: Double?
     var updatedAt: Date
 
-    /// More than 20 % over the posted limit.
-    var isWellOverLimit: Bool {
-        guard let speedLimit, speedLimit > 0 else { return false }
-        return speed > speedLimit * 1.2
+    /// ≥10 % over → mild, ≥20 % over → severe (both thresholds inclusive).
+    var overspeed: OverspeedLevel {
+        guard let speedLimit, speedLimit > 0 else { return .none }
+        let v = speed.rounded()
+        if v >= speedLimit * 1.2 { return .severe }
+        if v >= speedLimit * 1.1 { return .mild }
+        return .none
     }
+}
+
+enum OverspeedLevel {
+    case none, mild, severe
 }
 
 struct ChargeState {

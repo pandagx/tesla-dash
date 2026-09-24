@@ -136,7 +136,7 @@ struct DriveContent: View {
                     Text("km/h").font(.label(18)).foregroundStyle(Theme.tertiary)
                         .padding(.leading, 12)
                 }
-                .overspeedFlash(drive.isWellOverLimit, cornerRadius: 24)
+                .overspeedFlash(drive.overspeed, cornerRadius: 24)
                 if let limit = drive.speedLimit { SpeedLimitSign(limit: limit, size: 88).padding(.top, 36) }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

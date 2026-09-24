@@ -146,17 +146,19 @@ struct SpeedLimitSign: View {
 }
 
 extension View {
-    /// Flashes a red glow behind the view (≈2 Hz) while `active`; used around the speed readout
-    /// when driving more than 20 % over the posted limit.
-    func overspeedFlash(_ active: Bool, cornerRadius: CGFloat = 16, inset: CGFloat = 6) -> some View {
+    /// Pulsing red glow behind the speed readout when over the posted limit:
+    /// mild (≥10 %) is fainter and slow, severe (≥20 %) is deeper and fast. Same red for both.
+    func overspeedFlash(_ level: OverspeedLevel, cornerRadius: CGFloat = 16, inset: CGFloat = 6) -> some View {
         background {
-            if active {
+            if level != .none {
+                let period = level == .severe ? 0.5 : 1.2
+                let strength = level == .severe ? 1.0 : 0.45
                 TimelineView(.animation(minimumInterval: 1 / 30)) { ctx in
-                    let phase = ctx.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 0.6) / 0.6
+                    let phase = ctx.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: period) / period
                     let on = 0.5 - 0.5 * cos(phase * 2 * .pi)   // smooth 0→1→0
                     // Soft glow: full strength in the middle, fading to nothing at the edges.
                     let red = Color(hex: 0xE3001B)
-                    let peak = 0.10 + 0.35 * on
+                    let peak = (0.10 + 0.35 * on) * strength
                     EllipticalGradient(stops: [.init(color: red.opacity(peak), location: 0),
                                                .init(color: red.opacity(peak * 0.75), location: 0.45),
                                                .init(color: red.opacity(peak * 0.25), location: 0.75),
