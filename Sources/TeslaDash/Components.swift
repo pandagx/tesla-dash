@@ -23,17 +23,54 @@ extension Theme {
     }
 }
 
+/// The speed number, rendered with the digit effect chosen in the menu (flip / roll / jump).
 struct SpeedText: View {
     let speed: Double
     let size: CGFloat
+    @Environment(WindowManager.self) private var windows
 
     var body: some View {
         let v = Int(speed.rounded())
-        Text("\(v)")
-            .font(.hero(size))
-            .foregroundStyle(Theme.speedColor(speed))
-            .contentTransition(.numericText(value: Double(v)))
-            .animation(.easeOut(duration: 0.3), value: v)
+        let color = Theme.speedColor(speed)
+        switch windows.digitEffect {
+        case .flip:
+            // Cards don't honour minimumScaleFactor, so step down until the number fits.
+            ViewThatFits(in: .horizontal) {
+                ForEach([1.0, 0.8, 0.62, 0.48, 0.36], id: \.self) { k in
+                    FlipNumber(value: v, size: size * k * 0.82, color: color)
+                }
+            }
+        case .roll:
+            Text("\(v)")
+                .font(.hero(size))
+                .foregroundStyle(color)
+                .contentTransition(.numericText(value: Double(v)))
+                .animation(.easeOut(duration: 0.3), value: v)
+        case .jump:
+            Text("\(v)")
+                .font(.hero(size))
+                .foregroundStyle(color)
+        }
+    }
+}
+
+/// Speed plus its "km/h" caption. Text readouts tuck the caption up under the glyphs
+/// (`tight`, negative); flip cards are taller than the glyphs, so the caption sits below them.
+struct SpeedWithUnit: View {
+    let speed: Double
+    let size: CGFloat
+    var minScale: CGFloat = 0.5
+    var unitSize: CGFloat = 12
+    var tight: CGFloat = -6
+    @Environment(WindowManager.self) private var windows
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: windows.digitEffect == .flip ? size * 0.05 : tight) {
+            SpeedText(speed: speed, size: size)
+                .minimumScaleFactor(minScale)
+                .lineLimit(1)
+            Text("km/h").font(.label(unitSize)).foregroundStyle(Theme.tertiary).padding(.leading, unitSize / 3)
+        }
     }
 }
 

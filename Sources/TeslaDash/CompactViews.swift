@@ -170,12 +170,7 @@ struct SquareWidget: View {
             // Hero: speed.
             if let d = s.drive {
                 HStack(alignment: .center, spacing: 8) {
-                    VStack(alignment: .leading, spacing: -6) {
-                        SpeedText(speed: d.speed, size: 112)
-                            .minimumScaleFactor(0.4)
-                            .lineLimit(1)
-                        Text("km/h").font(.label(12)).foregroundStyle(Theme.tertiary).padding(.leading, 4)
-                    }
+                    SpeedWithUnit(speed: d.speed, size: 112, minScale: 0.4, unitSize: 12, tight: -6)
                     .overspeedFlash(d.overspeed)
                     Spacer(minLength: 0)
                     if let limit = d.speedLimit { SpeedLimitSign(limit: limit, size: 42) }
@@ -225,12 +220,8 @@ struct VerticalBar: View {
                 let f = store.freshness(d.updatedAt, staleAfter: 5)
                 tile(nil, f) {
                     HStack(alignment: .center) {
-                        VStack(alignment: .leading, spacing: -8) {
-                            SpeedText(speed: d.speed, size: 96)
-                                .minimumScaleFactor(0.35) // three digits must fit at 200 pt wide
-                                .lineLimit(1)
-                            Text("km/h").font(.label(12)).foregroundStyle(Theme.tertiary).padding(.leading, 4)
-                        }
+                        // minScale: three digits must fit at 200 pt wide
+                        SpeedWithUnit(speed: d.speed, size: 96, minScale: 0.35, unitSize: 12, tight: -8)
                         .overspeedFlash(d.overspeed, cornerRadius: 12)
                         Spacer(minLength: 0)
                         VStack(spacing: 8) {

@@ -68,6 +68,29 @@ enum AppearanceMode: String, CaseIterable, Identifiable {
     }
 }
 
+/// How the speed readout changes value.
+enum DigitEffect: String, CaseIterable, Identifiable {
+    case flip, roll, jump
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .flip: "翻页"
+        case .roll: "滚动"
+        case .jump: "直接跳变"
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .flip: "rectangle.split.1x2"
+        case .roll: "arrow.up.arrow.down"
+        case .jump: "bolt"
+        }
+    }
+}
+
 /// Borderless windows refuse key status by default; the compact modes still need clicks and shortcuts.
 final class DashWindow: NSWindow {
     override var canBecomeKey: Bool { true }
@@ -90,6 +113,7 @@ final class WindowManager {
     private(set) var mode: DisplayMode
     private(set) var pinned: Bool
     private(set) var appearance: AppearanceMode
+    private(set) var digitEffect: DigitEffect
     private var window: DashWindow?
     private let sizeGuard = MinSizeDelegate()
     private let defaults = UserDefaults.standard
@@ -98,6 +122,7 @@ final class WindowManager {
         mode = DisplayMode(rawValue: UserDefaults.standard.string(forKey: "mode") ?? "") ?? .square
         pinned = UserDefaults.standard.object(forKey: "pinned") as? Bool ?? true
         appearance = AppearanceMode(rawValue: UserDefaults.standard.string(forKey: "appearance") ?? "") ?? .system
+        digitEffect = DigitEffect(rawValue: UserDefaults.standard.string(forKey: "digitEffect") ?? "") ?? .roll
     }
 
     func show(store: VehicleStore, music: NeteaseNowPlaying) {
@@ -128,6 +153,11 @@ final class WindowManager {
         appearance = a
         defaults.set(a.rawValue, forKey: "appearance")
         NSApp.appearance = a.nsAppearance
+    }
+
+    func setDigitEffect(_ e: DigitEffect) {
+        digitEffect = e
+        defaults.set(e.rawValue, forKey: "digitEffect")
     }
 
     func togglePinned() {
@@ -281,6 +311,16 @@ struct ModeMenuItems: View {
                 windows.setAppearance(a)
             } label: {
                 Label(a.label, systemImage: windows.appearance == a ? "checkmark" : a.icon)
+            }
+        }
+        Divider()
+        Section("数字效果") {
+            ForEach(DigitEffect.allCases) { e in
+                Button {
+                    windows.setDigitEffect(e)
+                } label: {
+                    Label(e.label, systemImage: windows.digitEffect == e ? "checkmark" : e.icon)
+                }
             }
         }
         Divider()
