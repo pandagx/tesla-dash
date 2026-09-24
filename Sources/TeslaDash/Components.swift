@@ -148,7 +148,7 @@ struct ClockText: View {
                 // Narrow: date over weekday, as a small two-line block in front of the time.
                 HStack(alignment: .center, spacing: size * 0.35) {
                     VStack(alignment: .trailing, spacing: -1) {
-                        day.font(.num(size * 0.66))
+                        day.font(.num(size * 0.82, .medium))
                         weekday.font(.label(size * 0.62))
                     }
                     time
