@@ -128,12 +128,16 @@ struct DriveContent: View {
 
     var body: some View {
         HStack(alignment: .center, spacing: 32) {
-            VStack(alignment: .leading, spacing: -20) {
-                SpeedText(speed: drive.speed, size: 250)
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                Text("km/h").font(.label(18)).foregroundStyle(Theme.tertiary)
-                    .padding(.leading, 12)
+            HStack(alignment: .top, spacing: 20) {
+                VStack(alignment: .leading, spacing: -20) {
+                    SpeedText(speed: drive.speed, size: 250)
+                        .minimumScaleFactor(0.5)
+                        .lineLimit(1)
+                    Text("km/h").font(.label(18)).foregroundStyle(Theme.tertiary)
+                        .padding(.leading, 12)
+                }
+                .overspeedFlash(drive.isWellOverLimit, cornerRadius: 24)
+                if let limit = drive.speedLimit { SpeedLimitSign(limit: limit, size: 88).padding(.top, 36) }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 

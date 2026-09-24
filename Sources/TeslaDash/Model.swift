@@ -29,7 +29,17 @@ struct DriveState {
     var latitude: Double
     var longitude: Double
     var odometer: Double       // km
+    /// Posted road limit (km/h). Not available over BLE (only the user's own "Speed Limit Mode"
+    /// cap is); the car has it on the CAN bus, so a CAN source (e.g. the Lazzi box) would fill it.
+    /// Only the mock feed sets it today.
+    var speedLimit: Double?
     var updatedAt: Date
+
+    /// More than 20 % over the posted limit.
+    var isWellOverLimit: Bool {
+        guard let speedLimit, speedLimit > 0 else { return false }
+        return speed > speedLimit * 1.2
+    }
 }
 
 struct ChargeState {

@@ -38,10 +38,16 @@ final class VehicleStore {
         }
     }
 
+    /// Dev: pin speed / limit (used by the snapshot renderer via `-snapshotSpeed` / `-snapshotLimit`).
+    func debugPin(speed: Double, limit: Double?) {
+        snapshot.drive?.speed = speed
+        snapshot.drive?.speedLimit = limit
+    }
+
     private func seed() {
         let d = Date()
         snapshot.drive = DriveState(speed: 0, gear: .P, power: 0, heading: 72,
-                                    latitude: 31.2304, longitude: 121.4737, odometer: 28_416.3, updatedAt: d)
+                                    latitude: 31.2304, longitude: 121.4737, odometer: 28_416.3, speedLimit: nil, updatedAt: d)
         snapshot.charge = ChargeState(level: 68, rangeKm: 362, limit: 90, isCharging: false, power: 0,
                                       addedKmPerHour: 0, minutesToFull: 0, chargerType: "", updatedAt: d)
         snapshot.climate = ClimateState(inside: 23.5, outside: 27.0, isOn: true, isAuto: true,
@@ -58,6 +64,7 @@ final class VehicleStore {
         switch s {
         case .driving, .highway:
             snapshot.status = .driving
+            snapshot.drive?.speedLimit = s == .highway ? 100 : 60
             snapshot.nav = NavState(destination: "上海虹桥站", minutesToArrival: 26, kmToArrival: 18.4,
                                     trafficDelayMinutes: 4, arrivalBatteryPercent: 64, updatedAt: d)
             snapshot.drive?.gear = .D
@@ -70,6 +77,7 @@ final class VehicleStore {
             snapshot.status = .charging
             snapshot.nav = nil
             snapshot.drive?.gear = .P
+            snapshot.drive?.speedLimit = nil
             snapshot.drive?.speed = 0
             snapshot.drive?.power = 0
             snapshot.charge?.isCharging = true
@@ -78,6 +86,7 @@ final class VehicleStore {
             snapshot.status = .parked
             snapshot.nav = nil
             snapshot.drive?.gear = .P
+            snapshot.drive?.speedLimit = nil
             snapshot.drive?.speed = 0
             snapshot.drive?.power = 0
             snapshot.charge?.isCharging = false
@@ -127,6 +136,10 @@ final class VehicleStore {
         if Int.random(in: 0..<16) == 0 {
             targetSpeed = (scenario == .highway ? [90, 105, 115, 125, 135, 140] : [0, 30, 45, 60, 80, 100, 115])
                 .randomElement()!
+        }
+        // Posted limit changes now and then, like passing signs.
+        if Int.random(in: 0..<60) == 0 {
+            drive.speedLimit = (scenario == .highway ? [100, 120] : [40, 60, 80]).randomElement()
         }
         let delta = max(-6, min(4, (targetSpeed - drive.speed) * 0.25))
         drive.speed = max(0, drive.speed + delta)

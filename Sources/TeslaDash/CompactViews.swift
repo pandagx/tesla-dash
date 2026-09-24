@@ -172,11 +172,13 @@ struct SquareWidget: View {
                 HStack(alignment: .center, spacing: 8) {
                     VStack(alignment: .leading, spacing: -6) {
                         SpeedText(speed: d.speed, size: 112)
-                            .minimumScaleFactor(0.6)
+                            .minimumScaleFactor(0.4)
                             .lineLimit(1)
                         Text("km/h").font(.label(12)).foregroundStyle(Theme.tertiary).padding(.leading, 4)
                     }
+                    .overspeedFlash(d.isWellOverLimit)
                     Spacer(minLength: 0)
+                    if let limit = d.speedLimit { SpeedLimitSign(limit: limit, size: 42) }
                     GearColumn(gear: d.gear, size: 12)
                 }
                 .opacity(store.freshness(d.updatedAt, staleAfter: 5)?.isStale == true ? 0.45 : 1)
@@ -225,12 +227,16 @@ struct VerticalBar: View {
                     HStack(alignment: .center) {
                         VStack(alignment: .leading, spacing: -8) {
                             SpeedText(speed: d.speed, size: 96)
-                                .minimumScaleFactor(0.6)
+                                .minimumScaleFactor(0.35) // three digits must fit at 200 pt wide
                                 .lineLimit(1)
                             Text("km/h").font(.label(12)).foregroundStyle(Theme.tertiary).padding(.leading, 4)
                         }
+                        .overspeedFlash(d.isWellOverLimit, cornerRadius: 12)
                         Spacer(minLength: 0)
-                        GearColumn(gear: d.gear, size: 12)
+                        VStack(spacing: 8) {
+                            if let limit = d.speedLimit { SpeedLimitSign(limit: limit, size: 32) }
+                            GearColumn(gear: d.gear, size: 12)
+                        }
                     }
                     PowerMeter(power: d.power, compact: true)
                 }
@@ -355,6 +361,7 @@ struct StripBar: View {
                 HStack(alignment: .center, spacing: speed * 0.2) {
                     SpeedText(speed: d.speed, size: speed)
                         .frame(minWidth: speed * 2.2, alignment: .trailing)
+                        .overspeedFlash(d.isWellOverLimit, cornerRadius: 10, inset: 2 * f)
                     VStack(spacing: 3 * f) {
                         Text(d.gear.rawValue)
                             .font(.num(15 * f, .semibold))
@@ -364,6 +371,7 @@ struct StripBar: View {
                                         in: RoundedRectangle(cornerRadius: 6 * f, style: .continuous))
                         Text("km/h").font(.label(10 * f)).foregroundStyle(Theme.tertiary)
                     }
+                    if let limit = d.speedLimit { SpeedLimitSign(limit: limit, size: min(speed * 0.62, 56 * f)) }
                 }
                 .opacity(store.freshness(d.updatedAt, staleAfter: 5)?.isStale == true ? 0.45 : 1)
                 .fixedSize()

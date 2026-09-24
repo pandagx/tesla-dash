@@ -8,6 +8,11 @@ import AppKit
 enum Snapshotter {
     static func renderAll(store: VehicleStore, windows: WindowManager, music: NeteaseNowPlaying, to dir: URL) {
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let d = UserDefaults.standard
+        if d.object(forKey: "snapshotSpeed") != nil {
+            store.debugPin(speed: d.double(forKey: "snapshotSpeed"),
+                           limit: d.object(forKey: "snapshotLimit") != nil ? d.double(forKey: "snapshotLimit") : nil)
+        }
         let modes: [(DisplayMode, CGSize)] = [
             (.square, CGSize(width: 360, height: 360)),
             (.vertical, CGSize(width: 200, height: 876)),

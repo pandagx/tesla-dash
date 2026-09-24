@@ -125,3 +125,42 @@ struct TireGrid: View {
             .foregroundStyle(low ? Theme.amber : Theme.secondary)
     }
 }
+
+/// Road sign: white disc, red ring, black number. Kept sign-coloured in dark mode too.
+struct SpeedLimitSign: View {
+    let limit: Double
+    var size: CGFloat = 44
+
+    var body: some View {
+        ZStack {
+            Circle().fill(Color.white)
+            Circle().strokeBorder(Color(hex: 0xE3001B), lineWidth: size * 0.13)
+            Text("\(Int(limit))")
+                .font(.system(size: size * (limit >= 100 ? 0.36 : 0.44), weight: .bold).width(.condensed))
+                .monospacedDigit()
+                .foregroundStyle(Color.black)
+        }
+        .frame(width: size, height: size)
+        .help("当前道路限速 \(Int(limit)) km/h")
+    }
+}
+
+extension View {
+    /// Flashes a red glow behind the view (≈2 Hz) while `active`; used around the speed readout
+    /// when driving more than 20 % over the posted limit.
+    func overspeedFlash(_ active: Bool, cornerRadius: CGFloat = 16, inset: CGFloat = 6) -> some View {
+        background {
+            if active {
+                TimelineView(.animation(minimumInterval: 1 / 30)) { ctx in
+                    let phase = ctx.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 0.6) / 0.6
+                    let on = 0.5 - 0.5 * cos(phase * 2 * .pi)   // smooth 0→1→0
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(Color(hex: 0xE3001B).opacity(0.10 + 0.35 * on))
+                        .overlay(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                            .strokeBorder(Color(hex: 0xE3001B).opacity(0.4 + 0.6 * on), lineWidth: 2))
+                        .padding(-inset)
+                }
+            }
+        }
+    }
+}
