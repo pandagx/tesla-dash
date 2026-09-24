@@ -25,6 +25,8 @@ final class VehicleStore {
     private var timer: Timer?
     private var t: Double = 0
     private var targetSpeed: Double = 60
+    /// No real speed-limit source yet, so the sign stays hidden unless `-mockSpeedLimit YES` is passed.
+    private let mockSpeedLimit = UserDefaults.standard.bool(forKey: "mockSpeedLimit")
 
     init() {
         seed()
@@ -64,7 +66,7 @@ final class VehicleStore {
         switch s {
         case .driving, .highway:
             snapshot.status = .driving
-            snapshot.drive?.speedLimit = s == .highway ? 100 : 60
+            snapshot.drive?.speedLimit = mockSpeedLimit ? (s == .highway ? 100 : 60) : nil
             snapshot.nav = NavState(destination: "上海虹桥站", minutesToArrival: 26, kmToArrival: 18.4,
                                     trafficDelayMinutes: 4, arrivalBatteryPercent: 64, updatedAt: d)
             snapshot.drive?.gear = .D
@@ -138,7 +140,7 @@ final class VehicleStore {
                 .randomElement()!
         }
         // Posted limit changes now and then, like passing signs.
-        if Int.random(in: 0..<60) == 0 {
+        if mockSpeedLimit, Int.random(in: 0..<60) == 0 {
             drive.speedLimit = (scenario == .highway ? [100, 120] : [40, 60, 80]).randomElement()
         }
         let delta = max(-6, min(4, (targetSpeed - drive.speed) * 0.25))
