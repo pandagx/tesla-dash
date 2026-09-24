@@ -111,14 +111,39 @@ private struct BluetoothRune: Shape {
     }
 }
 
+/// "9/24 星期四 16:30": date and weekday dimmer, time as before. Drops the weekday, then the
+/// date, when the space is too narrow.
 struct ClockText: View {
     let now: Date
     var size: CGFloat = 16
 
+    private static let dayFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "zh_CN")
+        f.dateFormat = "M/d"
+        return f
+    }()
+
+    private static let weekdayFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "zh_CN")
+        f.dateFormat = "EEEE" // 星期四
+        return f
+    }()
+
     var body: some View {
-        Text(now, format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
-            .font(.num(size))
+        let time = Text(now, format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
             .foregroundStyle(Theme.secondary)
+        let day = Text(Self.dayFormatter.string(from: now)).foregroundStyle(Theme.tertiary)
+        let weekday = Text(Self.weekdayFormatter.string(from: now))
+            .font(.label(size * 0.85)).foregroundStyle(Theme.tertiary)
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .firstTextBaseline, spacing: size * 0.4) { day; weekday; time }
+            HStack(alignment: .firstTextBaseline, spacing: size * 0.4) { day; time }
+            time
+        }
+        .font(.num(size))
+        .lineLimit(1)
     }
 }
 

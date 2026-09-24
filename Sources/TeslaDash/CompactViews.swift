@@ -87,7 +87,7 @@ private struct CompactHeader: View {
             }
             .lineLimit(1)
             Spacer(minLength: 6)
-            ClockText(now: store.now, size: 13).fixedSize()
+            ClockText(now: store.now, size: 13).layoutPriority(1)
             BluetoothIcon(connected: s.bleConnected, size: 13)
             WindowControls()
         }
