@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Road speed-limit sign (white disc, red ring) next to the speed in all four modes
+- Two-level overspeed alert: a red glow behind the speed (strong in the centre, fading to the edges)
+  - ≥10 % over the limit: mild (fainter, slow pulse, 1.2 s)
+  - ≥20 % over (inclusive): severe (deeper, fast pulse, 0.5 s)
+
+### Notes
+- The posted road speed limit is **not available over BLE** (the protocol only exposes the
+  owner's own "Speed Limit Mode" cap). The car has it on the CAN bus only. Until a real source
+  exists, the sign and alert are hidden; pass `-mockSpeedLimit YES` to demo with simulated limits.
+
+### Fixed
+- Vertical mode at its narrowest width truncated three-digit speeds ("12…")
+
 ## v0.1.0 — 2026-09-24
 
 First version: the UI is complete and runs on simulated data.
