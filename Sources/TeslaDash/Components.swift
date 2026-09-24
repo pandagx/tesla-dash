@@ -154,10 +154,9 @@ extension View {
                 TimelineView(.animation(minimumInterval: 1 / 30)) { ctx in
                     let phase = ctx.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 0.6) / 0.6
                     let on = 0.5 - 0.5 * cos(phase * 2 * .pi)   // smooth 0→1→0
+                    // Fill only, no outline: the area itself pulses.
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(Color(hex: 0xE3001B).opacity(0.10 + 0.35 * on))
-                        .overlay(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                            .strokeBorder(Color(hex: 0xE3001B).opacity(0.4 + 0.6 * on), lineWidth: 2))
+                        .fill(Color(hex: 0xE3001B).opacity(0.06 + 0.30 * on))
                         .padding(-inset)
                 }
             }
