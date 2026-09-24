@@ -249,7 +249,7 @@ struct NavContent: View {
                         .foregroundStyle(Theme.amber)
                 }
             } else {
-                Label("未在导航", systemImage: "location.slash")
+                Label("未导航", systemImage: "location.slash")
                     .font(.system(size: 17, weight: .medium))
                     .foregroundStyle(Theme.secondary)
             }

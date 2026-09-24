@@ -8,6 +8,10 @@
   - ≥10 % over the limit: mild (fainter, slow pulse, 1.2 s)
   - ≥20 % over (inclusive): severe (deeper, fast pulse, 0.5 s)
 
+- Navigation shows "未导航" (not navigating) when the car has no active route; the vertical
+  mode now always keeps the navigation tile. Only the car's own navigation is synced
+  (phone navigation isn't visible to the car)
+
 ### Notes
 - The posted road speed limit is **not available over BLE** (the protocol only exposes the
   owner's own "Speed Limit Mode" cap). The car has it on the CAN bus only. Until a real source

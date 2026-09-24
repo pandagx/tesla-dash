@@ -275,8 +275,9 @@ struct VerticalBar: View {
             }
 
             // Navigation sits right above the map (phone navigation is the norm, so it's secondary).
-            if let n = s.nav {
-                tile("导航") {
+            // Car navigation: minutes left, km left and arrival time while a route is active.
+            tile("导航") {
+                if let n = s.nav {
                     Text(n.destination).font(.label(13, .semibold)).foregroundStyle(Theme.text).lineLimit(1)
                     let eta = Text(store.now.addingTimeInterval(n.minutesToArrival * 60),
                                    format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits)) + Text(" 到达")
@@ -287,6 +288,9 @@ struct VerticalBar: View {
                     }
                     .lineLimit(1)
                     .font(.num(11)).foregroundStyle(Theme.secondary)
+                } else {
+                    Label("未导航", systemImage: "location.slash")
+                        .font(.label(12)).foregroundStyle(Theme.tertiary)
                 }
             }
 
