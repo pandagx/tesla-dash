@@ -18,6 +18,9 @@ A Tesla dashboard for macOS: floating on the desktop, it shows live vehicle data
 - Speed colors: <60 white, 60–80 yellow, 80–100 orange, 100–120 red-orange, >120 red
 - Bluetooth status: blue = connected, red with a slash = disconnected
 - Stale-data warning: a module dims and shows "x seconds ago" when its data hasn't updated for too long
+- Speed digit effect, switchable from the right-click menu: flip clock / roll / jump
+- Clock shows month/day and weekday ("9/24 星期四 16:30"); in the narrow vertical bar the date is stacked in front of the time
+- Road speed-limit sign + two-level overspeed alert (≥10% faint slow flash, ≥20% deep fast flash). **Hidden by default until a real speed-limit source is available**; turn on 模拟限速 in the menu to demo
 
 ## Displayed data
 

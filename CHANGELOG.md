@@ -1,13 +1,14 @@
 # Changelog
 
-## Unreleased
+## v0.2.0 — 2026-09-24
+
+Speed readout effects, date in the clock, overspeed alert (UI ready, awaiting a speed-limit source).
 
 ### Added
 - Road speed-limit sign (white disc, red ring) next to the speed in all four modes
 - Two-level overspeed alert: a red glow behind the speed (strong in the centre, fading to the edges)
   - ≥10 % over the limit: mild (fainter, slow pulse, 1.2 s)
   - ≥20 % over (inclusive): severe (deeper, fast pulse, 0.5 s)
-
 - Digit effect for the speed readout, switchable in the right-click / menu-bar menu (数字效果):
   翻页 flip-clock cards (SF Pro Condensed, 0.18 s per flip, only changed digits flip),
   滚动 rolling numbers (default), 直接跳变 plain jump; the choice is remembered
@@ -21,8 +22,15 @@
   owner's own "Speed Limit Mode" cap). The car has it on the CAN bus only. Until a real source
   exists, the sign and alert are hidden by default; turn on 模拟限速 in the menu (or pass `-mockSpeedLimit YES`) to demo with simulated limits.
 
+- Speed-limit sources surveyed (none free and reliable for China yet): Baidu "道路属性高级服务"
+  is paid after a trial; AMap's old grasp-road API was retired in 2021; Tencent's WebService API
+  has no speed limits; Apple MapKit exposes none; OpenStreetMap `maxspeed` covers ~4 % of central
+  Shanghai roads and ~22 % of motorways. Navigation SDKs (Baidu/AMap, iOS/Android only) may work —
+  a feasibility test is parked for later.
+
 ### Fixed
 - Vertical mode at its narrowest width truncated three-digit speeds ("12…")
+- Header clock kept the date in the narrow vertical bar (layout chosen by measured width)
 
 ## v0.1.0 — 2026-09-24
 
